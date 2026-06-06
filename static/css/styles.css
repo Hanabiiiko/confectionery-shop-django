@@ -198,6 +198,134 @@ footer {
     color: var(--color-muted);
 }
 
+.catalog-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.sidebar {
+    flex: 0 0 200px;
+    background-color: var(--color-white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem 1rem;
+}
+
+.sidebar-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.75rem;
+}
+
+.sidebar-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.sidebar-link:hover {
+    background-color: var(--color-soft);
+    color: var(--color-accent);
+}
+
+.sidebar-link.active {
+    background-color: var(--color-soft);
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.catalog-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.catalog-heading {
+    font-size: 1.5rem;
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+}
+
+.catalog-empty {
+    color: var(--color-muted);
+    margin-top: 1.5rem;
+}
+
+.card-category {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-color: var(--color-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img-placeholder::after {
+    content: '🍰';
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    padding-inline: 0.6rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--color-soft);
+    background-color: var(--color-white);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.page-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.page-link.current {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-white);
+    font-weight: 700;
+}
+
+.page-link.disabled {
+    color: var(--color-muted);
+    cursor: default;
+}
+
 @media (max-width: 640px) {
     header .container {
         flex-direction: column;
@@ -217,5 +345,19 @@ footer {
     .card-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 1rem;
+    }
+
+    .catalog-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        flex: none;
+        width: 100%;
+    }
+
+    .sidebar-list {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 }

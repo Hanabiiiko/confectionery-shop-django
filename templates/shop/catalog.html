@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if current_category %}{{ current_category.name }} — {% endif %}Каталог — Сладости
+{% endblock %}
+
+{% block content %}
+<div class="catalog-layout">
+
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Категории</h2>
+        <ul class="sidebar-list">
+            <li>
+                <a href="/shop/"
+                   class="sidebar-link {% if not current_category %}active{% endif %}">
+                    Все товары
+                </a>
+            </li>
+            {% for cat in categories %}
+            <li>
+                <a href="{{ cat.get_absolute_url }}"
+                   class="sidebar-link {% if cat == current_category %}active{% endif %}">
+                    {{ cat.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <div class="catalog-content">
+
+        <h1 class="catalog-heading">
+            {% if current_category %}{{ current_category.name }}{% else %}Все товары{% endif %}
+        </h1>
+
+        {% if products %}
+        <div class="card-grid">
+            {% for product in products %}
+            <article class="card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="card-img-placeholder"></div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="card-category">{{ product.category.name }}</span>
+                    <p class="card-title">{{ product.name }}</p>
+                    <p class="card-price">{{ product.price }} ₽</p>
+                    <a class="btn btn-outline" href="{{ product.get_absolute_url }}">Подробнее</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&larr;</a>
+            {% else %}
+                <span class="page-link disabled">&larr;</span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <span class="page-link current">{{ num }}</span>
+                {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rarr;</a>
+            {% else %}
+                <span class="page-link disabled">&rarr;</span>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <p class="catalog-empty">В этой категории пока нет товаров.</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
