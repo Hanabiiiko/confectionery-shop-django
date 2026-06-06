@@ -12,6 +12,12 @@
 <header>
     <div class="container">
         <a class="logo" href="/">Сладости</a>
+        <form class="header-search" action="/shop/" method="get">
+            <input class="search-input" type="search" name="q"
+                   placeholder="Поиск товаров..."
+                   value="{{ request.GET.q }}">
+            <button class="search-btn" type="submit">&#128269;</button>
+        </form>
         <nav>
             <a href="/shop/">Каталог</a>
             <a href="/cart/">Корзина</a>

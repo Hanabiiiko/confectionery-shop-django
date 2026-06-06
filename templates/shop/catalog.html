@@ -33,6 +33,39 @@
             {% if current_category %}{{ current_category.name }}{% else %}Все товары{% endif %}
         </h1>
 
+        <form class="filter-bar" method="get" action="">
+            {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+            {% endif %}
+            {% if current_category %}
+                <input type="hidden" name="slug" value="{{ current_category.slug }}">
+            {% endif %}
+
+            <div class="filter-group">
+                <label class="filter-label">Цена от</label>
+                <input class="filter-input" type="number" name="min_price"
+                       min="0" placeholder="0" value="{{ current_min }}">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">до</label>
+                <input class="filter-input" type="number" name="max_price"
+                       min="0" placeholder="∞" value="{{ current_max }}">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Сортировка</label>
+                <select class="filter-select" name="sort">
+                    <option value="newest"    {% if current_sort == 'newest'    %}selected{% endif %}>Новинки</option>
+                    <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Цена ↑</option>
+                    <option value="price_desc"{% if current_sort == 'price_desc'%}selected{% endif %}>Цена ↓</option>
+                </select>
+            </div>
+            <button class="btn btn-primary filter-apply" type="submit">Применить</button>
+            <a class="btn btn-outline filter-reset"
+               href="{% if current_category %}{{ current_category.get_absolute_url }}{% else %}/shop/{% endif %}">
+                Сбросить
+            </a>
+        </form>
+
         {% if products %}
         <div class="card-grid">
             {% for product in products %}
@@ -55,7 +88,7 @@
         {% if page_obj.paginator.num_pages > 1 %}
         <nav class="pagination">
             {% if page_obj.has_previous %}
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&larr;</a>
+                <a class="page-link" href="?{{ get_params }}&page={{ page_obj.previous_page_number }}">&larr;</a>
             {% else %}
                 <span class="page-link disabled">&larr;</span>
             {% endif %}
@@ -64,12 +97,12 @@
                 {% if num == page_obj.number %}
                     <span class="page-link current">{{ num }}</span>
                 {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    <a class="page-link" href="?{{ get_params }}&page={{ num }}">{{ num }}</a>
                 {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rarr;</a>
+                <a class="page-link" href="?{{ get_params }}&page={{ page_obj.next_page_number }}">&rarr;</a>
             {% else %}
                 <span class="page-link disabled">&rarr;</span>
             {% endif %}
@@ -77,7 +110,7 @@
         {% endif %}
 
         {% else %}
-        <p class="catalog-empty">В этой категории пока нет товаров.</p>
+        <p class="catalog-empty">Ничего не найдено. Попробуйте изменить фильтры.</p>
         {% endif %}
 
     </div>
