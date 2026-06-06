@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — Сладости{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h1 class="auth-title">Регистрация</h1>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group {% if field.errors %}form-group--error{% endif %}">
+                <label class="form-label" for="{{ field.id_for_label }}">
+                    {{ field.label }}{% if field.field.required %} <span class="form-required">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary auth-submit">Зарегистрироваться</button>
+        </form>
+
+        <p class="auth-alt">
+            Уже есть аккаунт? <a href="{% url 'accounts:login' %}">Войти</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
