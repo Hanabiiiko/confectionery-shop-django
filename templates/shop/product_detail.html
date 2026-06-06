@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — Сладости{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+    <a href="/shop/">Каталог</a>
+    <span class="breadcrumb-sep">/</span>
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>{{ product.name }}</span>
+</nav>
+
+<div class="product-detail">
+
+    <div class="product-gallery">
+        {% if product.image %}
+            <img class="product-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+            <div class="product-img-placeholder"></div>
+        {% endif %}
+    </div>
+
+    <div class="product-info">
+        <span class="product-category-tag">
+            <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+        </span>
+
+        <h1 class="product-name">{{ product.name }}</h1>
+
+        <p class="product-price">{{ product.price }} ₽</p>
+
+        {% if product.weight_grams %}
+        <p class="product-weight">Вес: {{ product.weight_grams }} г</p>
+        {% endif %}
+
+        <p class="product-availability {% if product.available %}in-stock{% else %}out-stock{% endif %}">
+            {% if product.available %}В наличии{% else %}Нет в наличии{% endif %}
+        </p>
+
+        {% if product.description %}
+        <p class="product-description">{{ product.description }}</p>
+        {% endif %}
+
+        <form method="post" action="/cart/add/{{ product.pk }}/">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-cart"
+                    {% if not product.available %}disabled{% endif %}>
+                В корзину
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if related %}
+<section class="related-section">
+    <h2 class="related-title">Похожие товары</h2>
+    <div class="card-grid related-grid">
+        {% for item in related %}
+        <article class="card">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+            {% else %}
+                <div class="card-img-placeholder"></div>
+            {% endif %}
+            <div class="card-body">
+                <p class="card-title">{{ item.name }}</p>
+                <p class="card-price">{{ item.price }} ₽</p>
+                <a class="btn btn-outline" href="{{ item.get_absolute_url }}">Подробнее</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
