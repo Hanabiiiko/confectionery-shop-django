@@ -80,6 +80,11 @@
                     <p class="card-title">{{ product.name }}</p>
                     <p class="card-price">{{ product.price }} ₽</p>
                     <a class="btn btn-outline" href="{{ product.get_absolute_url }}">Подробнее</a>
+                    <form method="post" action="{% url 'cart:add' product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-cart-sm"
+                                {% if not product.available %}disabled{% endif %}>В корзину</button>
+                    </form>
                 </div>
             </article>
             {% endfor %}
