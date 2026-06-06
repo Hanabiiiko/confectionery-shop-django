@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Оформление заказа — Сладости{% endblock %}
+
+{% block content %}
+<h1 class="cart-heading">Оформление заказа</h1>
+
+<form method="post" class="checkout-layout">
+    {% csrf_token %}
+
+    <div class="checkout-form-col">
+        <div class="checkout-section">
+            <h2 class="checkout-section-title">Контактные данные</h2>
+
+            <div class="form-group {% if form.full_name.errors %}form-group--error{% endif %}">
+                <label class="form-label" for="{{ form.full_name.id_for_label }}">
+                    ФИО <span class="form-required">*</span>
+                </label>
+                {{ form.full_name }}
+                {% for error in form.full_name.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group {% if form.phone.errors %}form-group--error{% endif %}">
+                <label class="form-label" for="{{ form.phone.id_for_label }}">
+                    Телефон <span class="form-required">*</span>
+                </label>
+                {{ form.phone }}
+                {% for error in form.phone.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="checkout-section">
+            <h2 class="checkout-section-title">Доставка</h2>
+
+            <div class="form-group">
+                <label class="form-label">Способ доставки</label>
+                <div class="delivery-options">
+                    {% for radio in form.delivery_method %}
+                    <label class="delivery-option">
+                        {{ radio.tag }}
+                        <span class="delivery-option-label">{{ radio.choice_label }}</span>
+                        {% if radio.data.value == 'courier' %}
+                            <span class="delivery-option-price">+{{ courier_cost|floatformat:0 }} ₽</span>
+                        {% else %}
+                            <span class="delivery-option-price">бесплатно</span>
+                        {% endif %}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group {% if form.address.errors %}form-group--error{% endif %}">
+                <label class="form-label" for="{{ form.address.id_for_label }}">
+                    Адрес доставки
+                </label>
+                {{ form.address }}
+                <span class="delivery-note" id="address-note">Укажите адрес при выборе курьерской доставки</span>
+                {% for error in form.address.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <aside class="cart-summary checkout-summary">
+        <h2 class="cart-summary-title">Ваш заказ</h2>
+
+        {% for item in cart %}
+        <div class="cart-summary-row checkout-item-row">
+            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+            <span>{{ item.total_price }} ₽</span>
+        </div>
+        {% endfor %}
+
+        <div class="cart-summary-divider"></div>
+
+        <div class="cart-summary-row">
+            <span>Товары</span>
+            <span>{{ cart.get_total_price }} ₽</span>
+        </div>
+        <div class="cart-summary-row">
+            <span>Доставка</span>
+            <span id="delivery-cost-display">0 ₽</span>
+        </div>
+
+        <div class="cart-summary-divider"></div>
+
+        <div class="cart-summary-total">
+            <span>Итого</span>
+            <span class="cart-total-price" id="order-total">{{ cart.get_total_price }} ₽</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary cart-checkout-btn">Оплатить (демо)</button>
+        <a href="{% url 'cart:detail' %}" class="cart-continue-link">Вернуться в корзину</a>
+    </aside>
+</form>
+
+<script>
+(function () {
+    var cartTotal = {{ cart.get_total_price }};
+    var courierCost = {{ courier_cost }};
+    var radios = document.querySelectorAll('input[name="delivery_method"]');
+    var deliveryCostEl = document.getElementById('delivery-cost-display');
+    var totalEl = document.getElementById('order-total');
+
+    function update() {
+        var selected = document.querySelector('input[name="delivery_method"]:checked');
+        var cost = (selected && selected.value === 'courier') ? courierCost : 0;
+        deliveryCostEl.textContent = cost > 0 ? cost + ' ₽' : 'бесплатно';
+        totalEl.textContent = (cartTotal + cost).toFixed(2).replace('.00', '') + ' ₽';
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', update); });
+    update();
+})();
+</script>
+{% endblock %}

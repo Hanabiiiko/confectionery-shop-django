@@ -79,7 +79,7 @@
             <span>К оплате</span>
             <span class="cart-total-price">{{ cart.get_total_price }} ₽</span>
         </div>
-        <a href="#" class="btn btn-primary cart-checkout-btn">Оформить заказ</a>
+        <a href="{% url 'orders:checkout' %}" class="btn btn-primary cart-checkout-btn">Оформить заказ</a>
         <a href="/shop/" class="cart-continue-link">Продолжить покупки</a>
     </aside>
 </div>
