@@ -75,3 +75,27 @@ class Review(models.Model):
 
     def __str__(self):
         return f'{self.user} → {self.product} ({self.rating}★)'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        on_delete=models.CASCADE,
+        related_name='favorited_by',
+    )
+    created_at = models.DateTimeField(verbose_name='Добавлено', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f'{self.user} → {self.product}'

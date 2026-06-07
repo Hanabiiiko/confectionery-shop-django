@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Избранное — Сладости{% endblock %}
+
+{% block content %}
+<h1 class="catalog-heading">Моё избранное</h1>
+
+{% if products %}
+<div class="card-grid">
+    {% for product in products %}
+    <article class="card">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+            <div class="card-img-placeholder"></div>
+        {% endif %}
+        <div class="card-body">
+            <span class="card-category">{{ product.category.name }}</span>
+            <p class="card-title">{{ product.name }}</p>
+            <p class="card-price">{{ product.price }} ₽</p>
+            <a class="btn btn-outline" href="{{ product.get_absolute_url }}">Подробнее</a>
+            <div class="card-actions">
+                <form method="post" action="{% url 'cart:add' product.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-cart-sm"
+                            {% if not product.available %}disabled{% endif %}>В корзину</button>
+                </form>
+                <form method="post" action="{% url 'toggle_favorite' product.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-fav active" title="Убрать из избранного">♥</button>
+                </form>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p class="catalog-empty">Вы пока ничего не добавили в избранное.</p>
+<a href="{% url 'catalog' %}" class="btn btn-outline">Перейти в каталог</a>
+{% endif %}
+{% endblock %}

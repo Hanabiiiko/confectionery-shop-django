@@ -42,13 +42,23 @@
         <p class="product-description">{{ product.description }}</p>
         {% endif %}
 
-        <form method="post" action="/cart/add/{{ product.pk }}/">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary btn-cart"
-                    {% if not product.available %}disabled{% endif %}>
-                В корзину
-            </button>
-        </form>
+        <div class="product-cart-row">
+            <form method="post" action="/cart/add/{{ product.pk }}/">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-cart"
+                        {% if not product.available %}disabled{% endif %}>
+                    В корзину
+                </button>
+            </form>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'toggle_favorite' product.pk %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn-fav btn-fav--lg {% if is_favorite %}active{% endif %}"
+                        title="В избранное">♥</button>
+            </form>
+            {% endif %}
+        </div>
     </div>
 </div>
 

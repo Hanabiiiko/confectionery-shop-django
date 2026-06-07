@@ -80,11 +80,21 @@
                     <p class="card-title">{{ product.name }}</p>
                     <p class="card-price">{{ product.price }} ₽</p>
                     <a class="btn btn-outline" href="{{ product.get_absolute_url }}">Подробнее</a>
-                    <form method="post" action="{% url 'cart:add' product.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary btn-cart-sm"
-                                {% if not product.available %}disabled{% endif %}>В корзину</button>
-                    </form>
+                    <div class="card-actions">
+                        <form method="post" action="{% url 'cart:add' product.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-cart-sm"
+                                    {% if not product.available %}disabled{% endif %}>В корзину</button>
+                        </form>
+                        {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'toggle_favorite' product.pk %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn-fav {% if product.pk in favorite_ids %}active{% endif %}"
+                                    title="В избранное">♥</button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
             </article>
             {% endfor %}
