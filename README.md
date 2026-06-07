@@ -1,4 +1,8 @@
+[![Maintainability](https://qlty.sh/gh/Hanabiiiko/projects/confectionery-shop-django/maintainability.svg)](https://qlty.sh/gh/Hanabiiiko/projects/confectionery-shop-django)
+
 # Онлайн-магазин кондитерских изделий
+
+http://159.194.227.3/
 
 Дипломный проект - интернет-магазин тортов, пирожных, конфет и подарочных наборов.
 
