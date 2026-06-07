@@ -32,7 +32,25 @@
 
     <div class="profile-card">
         <h2>Мои заказы</h2>
+        {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <a href="{% url 'orders:order_detail' order.pk %}" class="order-row">
+                <div class="order-row__main">
+                    <span class="order-row__num">Заказ #{{ order.pk }}</span>
+                    <span class="order-row__date">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                <div class="order-row__meta">
+                    <span class="order-row__delivery">{{ order.get_delivery_method_display }}</span>
+                    <span class="order-status order-status--{{ order.status }}">{{ order.get_status_display }}</span>
+                    <span class="order-row__total">{{ order.total }} ₽</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
         <p class="profile-orders-placeholder">Здесь будут ваши заказы.</p>
+        {% endif %}
     </div>
 
 </div>

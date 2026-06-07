@@ -63,3 +63,13 @@ def checkout(request):
 def order_success(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)
     return render(request, 'orders/order_success.html', {'order': order})
+
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, pk=order_id, user=request.user)
+    goods_total = order.total - order.delivery_cost
+    return render(request, 'orders/order_detail.html', {
+        'order': order,
+        'goods_total': goods_total,
+    })

@@ -41,4 +41,7 @@ def profile_view(request):
             return redirect('accounts:profile')
     else:
         form = ProfileForm(instance=request.user)
-    return render(request, 'accounts/profile.html', {'form': form})
+    return render(request, 'accounts/profile.html', {
+        'form': form,
+        'orders': request.user.orders.all(),
+    })

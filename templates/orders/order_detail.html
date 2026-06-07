@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ #{{ order.pk }} — Сладости{% endblock %}
+
+{% block content %}
+<div class="order-detail">
+    <div class="order-detail-head">
+        <h1 class="cart-heading">Заказ #{{ order.pk }}</h1>
+        <span class="order-status order-status--{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+    <p class="order-detail-date">
+        от {{ order.created_at|date:"d.m.Y H:i" }}
+        {% if order.is_paid %}· <span class="order-detail-paid">оплачен</span>{% endif %}
+    </p>
+
+    <div class="order-detail-layout">
+        <div class="order-detail-items">
+            {% for item in order.items.all %}
+            <div class="order-item-row">
+                <span class="order-item-name">{{ item.product.name }}</span>
+                <span class="order-item-qty">{{ item.price }} ₽ × {{ item.quantity }}</span>
+                <span class="order-item-sum">{{ item.get_total }} ₽</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <aside class="cart-summary order-detail-summary">
+            <h2 class="cart-summary-title">Итого</h2>
+
+            <div class="cart-summary-row">
+                <span>Товары</span>
+                <span>{{ goods_total }} ₽</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Доставка</span>
+                <span>{% if order.delivery_cost %}{{ order.delivery_cost }} ₽{% else %}бесплатно{% endif %}</span>
+            </div>
+
+            <div class="cart-summary-divider"></div>
+
+            <div class="cart-summary-total">
+                <span>К оплате</span>
+                <span class="cart-total-price">{{ order.total }} ₽</span>
+            </div>
+        </aside>
+    </div>
+
+    <div class="order-detail-info">
+        <h2 class="checkout-section-title">Доставка</h2>
+        <div class="success-detail-row">
+            <span class="success-detail-label">Способ</span>
+            <span>{{ order.get_delivery_method_display }}</span>
+        </div>
+        {% if order.address %}
+        <div class="success-detail-row">
+            <span class="success-detail-label">Адрес</span>
+            <span>{{ order.address }}</span>
+        </div>
+        {% endif %}
+        <div class="success-detail-row">
+            <span class="success-detail-label">Получатель</span>
+            <span>{{ order.full_name }}</span>
+        </div>
+        <div class="success-detail-row">
+            <span class="success-detail-label">Телефон</span>
+            <span>{{ order.phone }}</span>
+        </div>
+    </div>
+
+    <a href="{% url 'accounts:profile' %}" class="cart-continue-link">← Назад в личный кабинет</a>
+</div>
+{% endblock %}
