@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Панель менеджера — Сладости{% endblock %}
+
+{% block content %}
+<div class="catalog-layout">
+
+    <aside class="sidebar">
+        <h2 class="sidebar-title">Управление</h2>
+        <ul class="sidebar-list dashboard-menu">
+            <li>
+                <a href="{% url 'dashboard:home' %}" class="sidebar-link active">Обзор</a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">Товары</a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link">Заказы</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="catalog-content">
+
+        <h1 class="catalog-heading">Панель менеджера</h1>
+
+        <div class="dashboard-stats">
+            <div class="dashboard-stat">
+                <span class="dashboard-stat-number">{{ products_count }}</span>
+                <span class="dashboard-stat-label">Всего товаров</span>
+            </div>
+            <div class="dashboard-stat">
+                <span class="dashboard-stat-number">{{ orders_count }}</span>
+                <span class="dashboard-stat-label">Всего заказов</span>
+            </div>
+            <div class="dashboard-stat">
+                <span class="dashboard-stat-number">{{ new_orders_count }}</span>
+                <span class="dashboard-stat-label">Новых заказов</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
