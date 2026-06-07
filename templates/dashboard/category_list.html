@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% load widget_tweaks %}
+
+{% block dashboard_title %}Категории{% endblock %}
+
+{% block dashboard %}
+<h1 class="catalog-heading">Категории</h1>
+
+<form class="dashboard-form" method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}form-group--error{% endif %}">
+        <label class="form-label" for="{{ field.id_for_label }}">
+            {{ field.label }}{% if field.field.required %} <span class="form-required">*</span>{% endif %}
+        </label>
+        {% render_field field class="dash-input" %}
+        {% for error in field.errors %}
+            <span class="form-error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="dashboard-form-actions">
+        <button type="submit" class="btn btn-primary">Добавить категорию</button>
+    </div>
+</form>
+
+{% if categories %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>Фото</th>
+            <th>Название</th>
+            <th>Slug</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cat in categories %}
+        <tr>
+            <td>
+                {% if cat.image %}
+                    <img class="dashboard-thumb" src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                {% else %}
+                    <span class="dashboard-thumb dashboard-thumb-empty">🍰</span>
+                {% endif %}
+            </td>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.slug }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="catalog-empty">Категорий пока нет.</p>
+{% endif %}
+{% endblock %}
