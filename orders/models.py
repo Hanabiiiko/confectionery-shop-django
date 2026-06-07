@@ -31,6 +31,8 @@ class Order(models.Model):
         default='pickup',
     )
     delivery_cost = models.DecimalField('Стоимость доставки', max_digits=8, decimal_places=2, default=0)
+    promo_code = models.CharField('Промокод', max_length=50, blank=True)
+    discount = models.DecimalField('Скидка', max_digits=8, decimal_places=2, default=0)
     total = models.DecimalField('Итого', max_digits=10, decimal_places=2)
     status = models.CharField(
         'Статус',
@@ -65,3 +67,17 @@ class OrderItem(models.Model):
 
     def get_total(self):
         return self.price * self.quantity
+
+
+class PromoCode(models.Model):
+    code = models.CharField('Код', max_length=50, unique=True)
+    discount_percent = models.PositiveSmallIntegerField('Скидка (%)')
+    active = models.BooleanField('Активен', default=True)
+    valid_until = models.DateField('Действует до', null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Промокод'
+        verbose_name_plural = 'Промокоды'
+
+    def __str__(self):
+        return self.code

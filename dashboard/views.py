@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
 from shop.models import Category, Product
-from orders.models import Order
+from orders.models import Order, PromoCode
 
 from .decorators import manager_required
-from .forms import CategoryForm, OrderStatusForm, ProductForm
+from .forms import CategoryForm, OrderStatusForm, ProductForm, PromoCodeForm
 
 
 @manager_required
@@ -136,9 +136,70 @@ def order_detail(request, pk):
         'section': 'orders',
         'order': order,
         'form': form,
-        'goods_total': order.total - order.delivery_cost,
+        'goods_total': order.total - order.delivery_cost + order.discount,
     }
     return render(request, 'dashboard/order_detail.html', context)
+
+
+@manager_required
+def promo_list(request):
+    promos = PromoCode.objects.all().order_by('-pk')
+    return render(request, 'dashboard/promo_list.html', {
+        'section': 'promos',
+        'promos': promos,
+    })
+
+
+@manager_required
+def promo_create(request):
+    if request.method == 'POST':
+        form = PromoCodeForm(request.POST)
+        if form.is_valid():
+            promo = form.save()
+            messages.success(request, f'Промокод «{promo.code}» добавлен.')
+            return redirect('dashboard:promo_list')
+    else:
+        form = PromoCodeForm()
+
+    return render(request, 'dashboard/promo_form.html', {
+        'section': 'promos',
+        'form': form,
+        'title': 'Добавить промокод',
+    })
+
+
+@manager_required
+def promo_update(request, pk):
+    promo = get_object_or_404(PromoCode, pk=pk)
+    if request.method == 'POST':
+        form = PromoCodeForm(request.POST, instance=promo)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Промокод «{promo.code}» обновлён.')
+            return redirect('dashboard:promo_list')
+    else:
+        form = PromoCodeForm(instance=promo)
+
+    return render(request, 'dashboard/promo_form.html', {
+        'section': 'promos',
+        'form': form,
+        'title': 'Изменить промокод',
+    })
+
+
+@manager_required
+def promo_delete(request, pk):
+    promo = get_object_or_404(PromoCode, pk=pk)
+    if request.method == 'POST':
+        code = promo.code
+        promo.delete()
+        messages.success(request, f'Промокод «{code}» удалён.')
+        return redirect('dashboard:promo_list')
+
+    return render(request, 'dashboard/promo_confirm_delete.html', {
+        'section': 'promos',
+        'promo': promo,
+    })
 
 
 @manager_required

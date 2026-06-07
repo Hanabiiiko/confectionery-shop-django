@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+
+{% block dashboard_title %}Промокоды{% endblock %}
+
+{% block dashboard %}
+<div class="dashboard-toolbar">
+    <h1 class="catalog-heading">Промокоды</h1>
+    <a class="btn btn-primary" href="{% url 'dashboard:promo_create' %}">Добавить</a>
+</div>
+
+{% if promos %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>Код</th>
+            <th>Скидка</th>
+            <th>Активен</th>
+            <th>Действует до</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for promo in promos %}
+        <tr>
+            <td><strong>{{ promo.code }}</strong></td>
+            <td>{{ promo.discount_percent }} %</td>
+            <td>
+                {% if promo.active %}
+                    <span class="product-availability in-stock">Да</span>
+                {% else %}
+                    <span class="product-availability out-stock">Нет</span>
+                {% endif %}
+            </td>
+            <td>{% if promo.valid_until %}{{ promo.valid_until|date:"d.m.Y" }}{% else %}—{% endif %}</td>
+            <td>
+                <div class="dashboard-row-actions">
+                    <a class="btn btn-outline btn-sm" href="{% url 'dashboard:promo_update' promo.pk %}">Изменить</a>
+                    <a class="btn btn-danger btn-sm" href="{% url 'dashboard:promo_delete' promo.pk %}">Удалить</a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="catalog-empty">Промокодов пока нет.</p>
+{% endif %}
+{% endblock %}

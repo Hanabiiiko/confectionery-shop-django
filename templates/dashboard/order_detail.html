@@ -36,6 +36,12 @@
                 <span>Товары</span>
                 <span>{{ goods_total }} ₽</span>
             </div>
+            {% if order.discount %}
+            <div class="cart-summary-row">
+                <span>Промокод {{ order.promo_code }}</span>
+                <span>−{{ order.discount }} ₽</span>
+            </div>
+            {% endif %}
             <div class="cart-summary-row">
                 <span>Доставка</span>
                 <span>{% if order.delivery_cost %}{{ order.delivery_cost }} ₽{% else %}бесплатно{% endif %}</span>

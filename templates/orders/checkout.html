@@ -64,6 +64,21 @@
                 {% endfor %}
             </div>
         </div>
+
+        <div class="checkout-section">
+            <h2 class="checkout-section-title">Промокод</h2>
+            <div class="form-group {% if form.promo_code.errors %}form-group--error{% endif %}">
+                <label class="form-label" for="{{ form.promo_code.id_for_label }}">Введите промокод</label>
+                <div class="promo-input-row">
+                    {{ form.promo_code }}
+                    <button type="button" id="promo-apply-btn" class="btn btn-outline btn-sm">Применить</button>
+                </div>
+                <span id="promo-status" class="promo-status"></span>
+                {% for error in form.promo_code.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
     <aside class="cart-summary checkout-summary">
@@ -81,6 +96,10 @@
         <div class="cart-summary-row">
             <span>Товары</span>
             <span>{{ cart.get_total_price }} ₽</span>
+        </div>
+        <div class="cart-summary-row" id="promo-discount-row" style="display:none">
+            <span>Скидка</span>
+            <span id="promo-discount-amount"></span>
         </div>
         <div class="cart-summary-row">
             <span>Доставка</span>
@@ -103,19 +122,63 @@
 (function () {
     var cartTotal = {{ cart.get_total_price }};
     var courierCost = {{ courier_cost }};
+    var discount = 0;
+
     var radios = document.querySelectorAll('input[name="delivery_method"]');
     var deliveryCostEl = document.getElementById('delivery-cost-display');
     var totalEl = document.getElementById('order-total');
+    var promoDiscountRow = document.getElementById('promo-discount-row');
+    var promoDiscountAmount = document.getElementById('promo-discount-amount');
+    var promoStatus = document.getElementById('promo-status');
+    var applyBtn = document.getElementById('promo-apply-btn');
+    var promoInput = document.querySelector('input[name="promo_code"]');
 
-    function update() {
+    function updateTotal() {
         var selected = document.querySelector('input[name="delivery_method"]:checked');
         var cost = (selected && selected.value === 'courier') ? courierCost : 0;
         deliveryCostEl.textContent = cost > 0 ? cost + ' ₽' : 'бесплатно';
-        totalEl.textContent = (cartTotal + cost).toFixed(2).replace('.00', '') + ' ₽';
+        var total = cartTotal - discount + cost;
+        totalEl.textContent = total.toFixed(2).replace('.00', '') + ' ₽';
     }
 
-    radios.forEach(function (r) { r.addEventListener('change', update); });
-    update();
+    radios.forEach(function (r) { r.addEventListener('change', updateTotal); });
+    updateTotal();
+
+    if (applyBtn && promoInput) {
+        applyBtn.addEventListener('click', function () {
+            var code = promoInput.value.trim();
+            if (!code) {
+                promoStatus.textContent = 'Введите промокод.';
+                promoStatus.className = 'promo-status promo-status--error';
+                return;
+            }
+            var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch('{% url "orders:validate_promo" %}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'csrfmiddlewaretoken=' + encodeURIComponent(csrf) + '&code=' + encodeURIComponent(code),
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                promoStatus.textContent = data.message;
+                if (data.valid) {
+                    discount = data.discount;
+                    promoStatus.className = 'promo-status promo-status--ok';
+                    promoDiscountRow.style.display = '';
+                    promoDiscountAmount.textContent = '−' + discount.toFixed(2).replace('.00', '') + ' ₽';
+                } else {
+                    discount = 0;
+                    promoStatus.className = 'promo-status promo-status--error';
+                    promoDiscountRow.style.display = 'none';
+                }
+                updateTotal();
+            })
+            .catch(function () {
+                promoStatus.textContent = 'Ошибка при проверке промокода.';
+                promoStatus.className = 'promo-status promo-status--error';
+            });
+        });
+    }
 })();
 </script>
 {% endblock %}

@@ -1743,3 +1743,20 @@ footer {
     gap: 0.75rem;
     margin-top: 0.5rem;
 }
+
+
+.promo-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.promo-input-row input {
+    flex: 1;
+}
+.promo-status {
+    display: block;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+.promo-status--ok    { color: #4caf50; }
+.promo-status--error { color: #e57373; }

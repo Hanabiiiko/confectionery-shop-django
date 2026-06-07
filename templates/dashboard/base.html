@@ -24,6 +24,10 @@
                 <a href="{% url 'dashboard:order_list' %}"
                    class="sidebar-link {% if section == 'orders' %}active{% endif %}">Заказы</a>
             </li>
+            <li>
+                <a href="{% url 'dashboard:promo_list' %}"
+                   class="sidebar-link {% if section == 'promos' %}active{% endif %}">Промокоды</a>
+            </li>
         </ul>
     </aside>
 

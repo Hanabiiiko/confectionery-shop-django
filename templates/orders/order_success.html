@@ -27,6 +27,12 @@
             <span>{{ order.address }}</span>
         </div>
         {% endif %}
+        {% if order.discount %}
+        <div class="success-detail-row">
+            <span class="success-detail-label">Промокод {{ order.promo_code }}</span>
+            <span>−{{ order.discount }} ₽</span>
+        </div>
+        {% endif %}
         <div class="success-detail-row">
             <span class="success-detail-label">Итого</span>
             <span class="success-total">{{ order.total }} ₽</span>

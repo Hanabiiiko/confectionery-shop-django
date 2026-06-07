@@ -1,7 +1,7 @@
 from django import forms
 
 from shop.models import Category, Product
-from orders.models import Order
+from orders.models import Order, PromoCode
 
 from .utils import unique_slug
 
@@ -42,3 +42,12 @@ class OrderStatusForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['status']
+
+
+class PromoCodeForm(forms.ModelForm):
+    class Meta:
+        model = PromoCode
+        fields = ['code', 'discount_percent', 'active', 'valid_until']
+        widgets = {
+            'valid_until': forms.DateInput(attrs={'type': 'date'}),
+        }
