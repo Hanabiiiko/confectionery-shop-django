@@ -1610,3 +1610,88 @@ footer {
     box-shadow: var(--shadow);
     padding: 1.5rem 1.75rem;
 }
+
+/* ── Отзывы ── */
+.reviews-section {
+    margin-top: 2.5rem;
+}
+
+.reviews-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.reviews-section h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.review-card {
+    background: var(--color-soft);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.review-meta {
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+}
+
+.review-card p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.star {
+    color: #ccc;
+    font-size: 1.1rem;
+}
+
+.star.filled {
+    color: #f5a623;
+}
+
+.avg-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+}
+
+.reviews-empty,
+.reviews-note {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin: 0.5rem 0 1rem;
+}
+
+.review-form-wrap {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: var(--color-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-width: 520px;
+}
+
+.review-form-wrap select,
+.review-form-wrap textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--color-border, #e8c7d0);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--color-bg, #fff8fa);
+    resize: vertical;
+}
+
+.review-form-wrap select:focus,
+.review-form-wrap textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}

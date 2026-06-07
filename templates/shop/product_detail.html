@@ -52,6 +52,57 @@
     </div>
 </div>
 
+<section class="reviews-section">
+    <h2>Отзывы{% if reviews %} ({{ reviews.count }}){% endif %}</h2>
+
+    {% if avg_rating %}
+    <div class="avg-rating">
+        {% for i in "12345" %}
+            <span class="star {% if forloop.counter <= avg_rating %}filled{% endif %}">★</span>
+        {% endfor %}
+        <span>{{ avg_rating }} из 5</span>
+    </div>
+    {% endif %}
+
+    {% for review in reviews %}
+    <div class="review-card">
+        <div class="review-meta">
+            <strong>{{ review.user.get_full_name|default:review.user.email }}</strong>
+            &nbsp;·&nbsp;{{ review.created_at|date:"d.m.Y" }}
+            &nbsp;·&nbsp;
+            {% for i in "12345" %}
+                <span class="star {% if forloop.counter <= review.rating %}filled{% endif %}">★</span>
+            {% endfor %}
+        </div>
+        <p>{{ review.text }}</p>
+    </div>
+    {% empty %}
+    <p class="reviews-empty">Отзывов пока нет. Будьте первым!</p>
+    {% endfor %}
+
+    {% if review_form %}
+    <div class="review-form-wrap">
+        <h3>Оставить отзыв</h3>
+        <form method="post" action="{% url 'add_review' product.slug %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="{{ review_form.rating.id_for_label }}">{{ review_form.rating.label }}</label>
+                {{ review_form.rating }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ review_form.text.id_for_label }}">{{ review_form.text.label }}</label>
+                {{ review_form.text }}
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </div>
+    {% elif user_review %}
+    <p class="reviews-note">Вы уже оставили отзыв на этот товар.</p>
+    {% elif not user.is_authenticated %}
+    <p class="reviews-note"><a href="/accounts/login/?next={{ request.path }}">Войдите</a>, чтобы оставить отзыв.</p>
+    {% endif %}
+</section>
+
 {% if related %}
 <section class="related-section">
     <h2 class="related-title">Похожие товары</h2>

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -44,3 +45,33 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return f'/shop/product/{self.slug}/'
+
+
+class Review(models.Model):
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Товар',
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    rating = models.PositiveSmallIntegerField(
+        verbose_name='Оценка',
+        choices=[(i, str(i)) for i in range(1, 6)],
+    )
+    text = models.TextField(verbose_name='Текст отзыва')
+    created_at = models.DateTimeField(verbose_name='Дата', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ('-created_at',)
+        unique_together = ('product', 'user')
+
+    def __str__(self):
+        return f'{self.user} → {self.product} ({self.rating}★)'

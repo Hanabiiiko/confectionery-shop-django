@@ -1,7 +1,11 @@
-from django.db.models import Q
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Avg, Q
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import DetailView, ListView, TemplateView
 
-from .models import Category, Product
+from .forms import ReviewForm
+from .models import Category, Product, Review
 
 SORT_MAP = {
     'price_asc':  'price',
@@ -79,4 +83,34 @@ class ProductDetailView(DetailView):
             .filter(category=product.category, available=True)
             .exclude(pk=product.pk)[:4]
         )
+        reviews = product.reviews.select_related('user').order_by('-created_at')
+        context['reviews'] = reviews
+        agg = reviews.aggregate(avg=Avg('rating'))['avg']
+        context['avg_rating'] = round(agg, 1) if agg else None
+
+        user = self.request.user
+        if user.is_authenticated:
+            user_review = reviews.filter(user=user).first()
+            context['user_review'] = user_review
+            if not user_review:
+                context['review_form'] = ReviewForm()
         return context
+
+
+@login_required
+def add_review(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    if request.method == 'POST':
+        if Review.objects.filter(product=product, user=request.user).exists():
+            messages.error(request, 'Вы уже оставили отзыв на этот товар.')
+        else:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.product = product
+                review.user = request.user
+                review.save()
+                messages.success(request, 'Отзыв добавлен. Спасибо!')
+            else:
+                messages.error(request, 'Проверьте введённые данные.')
+    return redirect('product_detail', slug=slug)
