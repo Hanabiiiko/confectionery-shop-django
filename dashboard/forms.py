@@ -1,6 +1,7 @@
 from django import forms
 
 from shop.models import Category, Product
+from orders.models import Order
 
 from .utils import unique_slug
 
@@ -35,3 +36,9 @@ class CategoryForm(forms.ModelForm):
         if commit:
             obj.save()
         return obj
+
+
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']

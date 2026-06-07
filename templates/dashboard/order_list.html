@@ -1,0 +1,60 @@
+{% extends "dashboard/base.html" %}
+
+{% block dashboard_title %}Заказы{% endblock %}
+
+{% block dashboard %}
+<div class="dashboard-toolbar">
+    <h1 class="catalog-heading">Заказы</h1>
+</div>
+
+<form class="dashboard-filter" method="get" action="">
+    <select class="dash-input" name="status">
+        <option value="">Все статусы</option>
+        {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-primary btn-sm" type="submit">Применить</button>
+    <a class="btn btn-outline btn-sm" href="{% url 'dashboard:order_list' %}">Сбросить</a>
+</form>
+
+{% if orders %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Покупатель</th>
+            <th>Дата</th>
+            <th>Сумма</th>
+            <th>Статус</th>
+            <th>Оплачен</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>#{{ order.pk }}</td>
+            <td>{{ order.full_name }}</td>
+            <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+            <td>{{ order.total }} ₽</td>
+            <td>
+                <span class="order-status order-status--{{ order.status }}">
+                    {{ order.get_status_display }}
+                </span>
+            </td>
+            <td>{% if order.is_paid %}Да{% else %}Нет{% endif %}</td>
+            <td>
+                <a class="btn btn-outline btn-sm"
+                   href="{% url 'dashboard:order_detail' order.pk %}">Открыть</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="catalog-empty">Заказов не найдено.</p>
+{% endif %}
+{% endblock %}

@@ -5,7 +5,7 @@ from shop.models import Category, Product
 from orders.models import Order
 
 from .decorators import manager_required
-from .forms import CategoryForm, ProductForm
+from .forms import CategoryForm, OrderStatusForm, ProductForm
 
 
 @manager_required
@@ -96,6 +96,49 @@ def product_delete(request, pk):
         'product': product,
     }
     return render(request, 'dashboard/product_confirm_delete.html', context)
+
+
+@manager_required
+def order_list(request):
+    valid_statuses = {s[0] for s in Order.STATUS_CHOICES}
+    current_status = request.GET.get('status', '').strip()
+    if current_status not in valid_statuses:
+        current_status = ''
+
+    orders = Order.objects.select_related('user')
+    if current_status:
+        orders = orders.filter(status=current_status)
+
+    context = {
+        'section': 'orders',
+        'orders': orders,
+        'status_choices': Order.STATUS_CHOICES,
+        'current_status': current_status,
+    }
+    return render(request, 'dashboard/order_list.html', context)
+
+
+@manager_required
+def order_detail(request, pk):
+    order = get_object_or_404(
+        Order.objects.prefetch_related('items__product'), pk=pk
+    )
+    if request.method == 'POST':
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Статус заказа #{order.pk} обновлён.')
+            return redirect('dashboard:order_detail', pk=pk)
+    else:
+        form = OrderStatusForm(instance=order)
+
+    context = {
+        'section': 'orders',
+        'order': order,
+        'form': form,
+        'goods_total': order.total - order.delivery_cost,
+    }
+    return render(request, 'dashboard/order_detail.html', context)
 
 
 @manager_required
